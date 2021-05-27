@@ -1,7 +1,6 @@
 # calculate QC metrics for all datasets
 
 source("R/functions.R")
-dir("R/modern/", full.names = T) %>% sapply(.,source,.GlobalEnv)
 exp = read_csv("data/files.csv") %>% as.data.frame
 
 # get corum
@@ -15,11 +14,12 @@ if (!file.exists("data/corum_edges.txt")) {
 corum.prots = unique(c(corum.edges[,1], corum.edges[,2]))
 
 # calculate metrics
-exp$Nid = exp$Nquant = exp$peak.width = 
-  exp$mean.ngauss = exp$mean.r2[ii] = exp$mean.sigma.maxA = exp$sd.sigma.maxA = 
+exp$Nid = exp$Nquant = exp$Noutliers =
+  exp$mean.ngauss = exp$mean.r2 = exp$mean.sigma.maxA = exp$sd.sigma.maxA = 
   exp$N.corum.overlap = exp$corum.corr = NA
 for (ii in 1:nrow(exp)) {
   chroms = get.chroms(exp$fn[ii])
+  colnames(chroms) = paste0("fraction", 1:ncol(chroms))
   
   # IDs and quantification
   exp$Nid[ii] = nrow(chroms)
@@ -28,8 +28,12 @@ for (ii in 1:nrow(exp)) {
   
   
   # modern
-  zz = detect_outliers(chroms)
-  exp$Noutliers[ii] = sum(abs(zz) > 5)
+  autocor = calculate_autocorrelation(chroms, 10, "pearson", 1)
+  zz = calculate_z_scores(autocor, bins = 1)
+  exp$Noutliers[ii] = sum(abs(zz) > 2)
+  chroms.modern = chroms
+  chroms.modern[abs(zz)>5] = NA
+  
   
   # gaussian parameters
   gauss = build_gaussians(chroms.modern, max_gaussians = 3)
@@ -42,8 +46,15 @@ for (ii in 1:nrow(exp)) {
     unlist(x$coefs$sigma[which.max(x$coefs$A)])
   })))
   
-  
   # corum overlap
   exp$N.corum.overlap[ii] = sum(rownames(chroms) %in% corum.prots)
+  adj = corum.edges %>% dplyr::select(1:2) %>% 
+    filter(.[[1]]%in%rownames(chroms) & .[[2]]%in%rownames(chroms)) %>%
+    adjacency_matrix_from_data_frame()
+  dd = 1 - amap::Dist(chroms, method = "pearson") %>% as.matrix()
+  dd = dd[match(rownames(adj), rownames(dd)), match(rownames(adj), rownames(dd))]
+  exp$corum.corr[ii] = mean(dd[adj==1])
   
+  # write
+  write_csv(exp, file = "data/files_cofracQC.csv")
 }

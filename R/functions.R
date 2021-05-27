@@ -13,6 +13,7 @@ require(amap)
 require(patchwork)
 require(tools)
 require(gtools)
+dir("R/modern/", full.names = T) %>% sapply(.,source,.GlobalEnv)
 
 taxa = c("human"=9606, "mouse"=10090)
 fn.proteome = c("human"="../no-reference/data/proteomes/uniprot-human-9606.txt",

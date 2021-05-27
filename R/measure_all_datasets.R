@@ -43,7 +43,7 @@ for (ii in 1:nrow(exp)) {
     exp$mean.sigma.maxA[ii] = mean(unlist(sapply(gauss[i.well.quantified], function(x) {
       unlist(x$coefs$sigma[which.max(x$coefs$A)])
     })))
-    exp$sd.sigma.maxA[ii] = mean(unlist(sapply(gauss[i.well.quantified], function(x) {
+    exp$sd.sigma.maxA[ii] = sd(unlist(sapply(gauss[i.well.quantified], function(x) {
       unlist(x$coefs$sigma[which.max(x$coefs$A)])
     })))
     

@@ -2,7 +2,7 @@
 #PBS -l walltime=71:00:00,select=1:ncpus=1:mem=16gb
 #PBS -N cofracQC
 #PBS -o /scratch/st-ljfoster-1/logs/cofracQC/cofracQC.out
-#PBS -e /scratch/st-ljfoster-1/logs/trinary/cofracQC.err
+#PBS -e /scratch/st-ljfoster-1/logs/cofracQC/cofracQC.err
 #PBS -m abe
 #PBS -M richard.greg.stacey@gmail.com
 #PBS -A st-ljfoster-1

@@ -4,6 +4,7 @@
 #PBS -o /scratch/st-ljfoster-1/logs/cofracQC/cofracQC_^array_index^.out
 #PBS -e /scratch/st-ljfoster-1/logs/cofracQC/cofracQC_^array_index^.err
 #PBS -m abe
+#PBS -A st-ljfoster-1
 #PBS -M richard.greg.stacey@gmail.com
 #PBS -J 1-264
 

@@ -1,11 +1,10 @@
 #!/bin/bash
-#PBS -l walltime=71:00:00,select=1:ncpus=1:mem=16gb
+#PBS -l walltime=8:00:00,select=1:ncpus=1:mem=16gb
 #PBS -N cofracQC
-#PBS -o /scratch/st-ljfoster-1/logs/cofracQC/cofracQC.out
-#PBS -e /scratch/st-ljfoster-1/logs/cofracQC/cofracQC.err
+#PBS -o /scratch/st-ljfoster-1/logs/cofracQC/cofracQC_^array_index^.out
+#PBS -e /scratch/st-ljfoster-1/logs/cofracQC/cofracQC_^array_index^.err
 #PBS -m abe
 #PBS -M richard.greg.stacey@gmail.com
-#PBS -A st-ljfoster-1
 
 if [ -e ~/environments/ppicluster_venv/bin/activate]
 then
@@ -20,4 +19,4 @@ module load r/3.6.2-py3.7.3
 
 cd /scratch/st-ljfoster-1/staceyri/cofracQC/
 
-Rscript /scratch/st-ljfoster-1/staceyri/cofracQC/R/measure_all_datasets.R 
+Rscript /scratch/st-ljfoster-1/staceyri/cofracQC/R/measure_all_datasets_array.R $PBS_ARRAY_INDEX

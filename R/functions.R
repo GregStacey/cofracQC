@@ -25,6 +25,45 @@ gold.standard = c("human"="../no-reference/data/complex/CORUM_human_edgelist.txt
                   "og"="../no-reference/data/complex/CORUM_edgelist_OG.txt",
                   "bee"="../no-reference/data/complex/CORUM_edgelist_OG.txt",
                   "fake01"="data/complex/fakechroms_01_edgelist.txt")
+# submit a job to the appropriate cluster
+submit_job = function(jobs0, script, allocation,
+                      system = c('cedar', 'sockeye', 'elasti'),
+                      jobs_per_array = 100) {
+  system = match.arg(system)
+  
+  if (is.character(jobs0)){
+    jobs = as.data.frame(read_csv(jobs0))
+    Njobs = nrow(jobs)+1
+  } else if(is.numeric(jobs0)) {
+    Njobs = jobs0+1
+  }
+  
+  
+  if (system == 'cedar') {
+    system(paste0("cd ~/project; ",
+                  "sbatch --account=", allocation, " --array=1-", Njobs, 
+                  " ", script))
+  } else if (system == 'elasti') {
+    system(paste0("cd ~/project; ",
+                  "sbatch --account=", allocation, " --array=1-", Njobs,
+                  " ", script))
+  } else if (system == 'sockeye') {
+    n_jobs = Njobs
+    ## Sockeye only lets you run 1,000 jobs at a time
+    n_submissions = ifelse(n_jobs > jobs_per_array,
+                           ceiling(n_jobs / jobs_per_array), 1)
+    for (submission_idx in seq_len(n_submissions)) {
+      job_start = (submission_idx - 1) * jobs_per_array + 1
+      job_end = ifelse(submission_idx == n_submissions,
+                       ifelse(n_jobs %% jobs_per_array == 0,
+                              submission_idx * jobs_per_array,
+                              job_start - 1 + n_jobs %% jobs_per_array),
+                       submission_idx * jobs_per_array)
+      system(paste0("qsub -A ", allocation, " -J ", job_start, "-", job_end,
+                    " ", script))
+    }
+  }
+}
 
 
 get.chroms = function(fn) {

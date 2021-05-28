@@ -23,7 +23,7 @@ exp$Nid = exp$Nquant = exp$Noutliers =
   exp$mean.ngauss = exp$mean.r2 = exp$mean.sigma.maxA = exp$sd.sigma.maxA = 
   exp$N.corum.overlap = exp$corum.corr = NA
 
-chroms = get.chroms(exp$fn[ii])
+chroms = get.chroms(exp$fn)
 colnames(chroms) = paste0("fraction", 1:ncol(chroms))
 
 exp = tryCatch({

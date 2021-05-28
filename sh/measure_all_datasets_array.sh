@@ -5,6 +5,7 @@
 #PBS -e /scratch/st-ljfoster-1/logs/cofracQC/cofracQC_^array_index^.err
 #PBS -m abe
 #PBS -M richard.greg.stacey@gmail.com
+#PBS -J 1-264
 
 if [ -e ~/environments/ppicluster_venv/bin/activate]
 then

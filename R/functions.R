@@ -76,7 +76,7 @@ get.chroms = function(fn) {
     if (length(unique(chroms[,i.rep]))>1) {
       stop("this function can't handle multiple replicates.")
     }
-    print(paste0(fn, " has a replicate column. Removing it..."))
+    print(paste0(fn, " has a replicate column. splitting by it..."))
     chroms = chroms[,-i.rep]
   }
   
@@ -106,3 +106,29 @@ make.corumedgelist.by.organism = function(fn, column.name) {
   return(edgelist)
 }
 
+
+get.group.from.fn = function(fn, ii = 1) {
+  groups = c("craig", "anders", "nick-hela", "nick-ap", "lola",
+             dir("../data/chromatograms/external/"))
+  group = rep(NA, length(fn))
+  for (jj in which(!is.na(fn))) {
+    # clean fn
+    if (grepl("external", fn[jj])) {
+      fn[jj] %<>% dirname(.) %>% strsplit(., "external/") %>% unlist(.) %>% nth(., 2)
+    } else {
+      fn[jj] = basename(file_path_sans_ext(fn[jj]))
+    }
+    fn[jj] = gsub("//","",fn[jj])
+    fn[jj] = gsub("/","-",fn[jj])
+    
+    # fn -> group
+    x = groups[unlist(sapply(groups, function(x) grepl(x, fn[jj])))]
+    if (length(x)>0) {
+      group[jj] = x
+    } else if (length(x)==0) {
+      group[jj] = fn[jj]
+    }
+  }
+  
+  return(list(fn, group)[[ii]])
+}
